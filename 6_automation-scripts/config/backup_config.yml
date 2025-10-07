@@ -1,0 +1,6 @@
+# Example backup config
+s3_bucket: my-portfolio-backups-bucket
+kms_key_id: ""  # leave empty to use default SSE-S3; or set a KMS key id/arn
+tags:
+  Project: Portfolio
+  Component: AutomationScripts

@@ -1,0 +1,2 @@
+# Example: document why a CVE is ignored and add a review date.
+# CVE-2023-XXXXX # false positive in demo lib; tracked internally as SEC-123; review by 2025-12-31

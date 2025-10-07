@@ -1,0 +1,6 @@
+skip-check:
+  - CKV_AWS_126  # example: skip specific checks if needed with a reason in PR
+soft-fail: true
+framework: all
+directory:
+  - infra/terraform

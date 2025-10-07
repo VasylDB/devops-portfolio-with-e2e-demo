@@ -1,0 +1,5 @@
+apiVersion: v2
+name: stack
+version: 0.1.0
+appVersion: "1.0.0"
+description: API + Worker + Redis demo with Ingress, HPA, ConfigMap & Secret

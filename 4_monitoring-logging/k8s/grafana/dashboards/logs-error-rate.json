@@ -1,0 +1,33 @@
+{
+  "title": "App Error Rate (Loki)",
+  "schemaVersion": 38,
+  "version": 3,
+  "templating": {
+    "list": [
+      {
+        "name": "ds_loki",
+        "type": "datasource",
+        "query": "loki",
+        "current": { "selected": true, "text": "Loki", "value": "Loki" }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Errors last 5m",
+      "datasource": { "type": "loki", "uid": "$ds_loki" },
+      "targets": [
+        { "refId": "A", "expr": "sum(rate({namespace=\"default\", pod=~\"error-logger.*\"} |= \"ERROR\" [5m]))" }
+      ]
+    },
+    {
+      "type": "logs",
+      "title": "Recent error logs",
+      "datasource": { "type": "loki", "uid": "$ds_loki" },
+      "targets": [
+        { "refId": "A", "expr": "{namespace=\"default\", pod=~\"error-logger.*\"} |= \"ERROR\"" }
+      ]
+    }
+  ]
+}

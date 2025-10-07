@@ -1,0 +1,53 @@
+pipeline {
+    agent {
+        any
+    }
+
+    environment {
+        AWS_REGION  = 'us-east-1'
+        ECR_REPO    = 'myapp'
+        ACCOUNT_ID  = '277707105544'
+        IMAGE_TAG   = 'latest'
+        IMAGE_URI   = "${ACCONT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir('app'){
+                    sh 'docker build -t ${ECR_REPO}:${IMAGE_TAG} .'
+                }
+            }
+        }
+
+        stage('Login to ECR') {
+            steps {
+                sh 'aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com'
+            }
+        }
+
+        stage('Tag & Push') {
+            steps {
+                sh '''
+                    docker tag ${ECR_REPO}:${IMAGE_TAG} ${IMAGE_URI}
+                    docker push ${IMAGE_URI}
+                '''
+            }
+        }
+
+        stage('Deploy to EKS'){
+            steps {
+                sh '''
+                # ensure kubectl context is set to your EKS cluster beforehand
+                sed -e "s#myregistry/myapp:latest#${IMAGE_URI}#g" k8s/deployment.yaml | kubectl apply -f -
+                '''
+            }
+        }
+    }
+}

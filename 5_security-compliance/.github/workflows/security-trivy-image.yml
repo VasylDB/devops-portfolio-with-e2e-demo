@@ -1,0 +1,52 @@
+name: Security – Trivy Image
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+concurrency:
+  group: trivy-image-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t app:ci .
+
+      - name: Trivy scan (image)
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: 'app:ci'
+          format: 'sarif'
+          output: 'trivy-results/trivy-image.sarif'
+          severity: 'HIGH,CRITICAL'
+          ignore-unfixed: true
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results/trivy-image.sarif
+
+      - name: Save raw report
+        if: always()
+        run: |
+          mkdir -p trivy-results
+          trivy image --config trivy/trivy.yaml --output trivy-results/trivy-image.txt app:ci || true
+        shell: bash
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-image-report
+          path: trivy-results/
+          retention-days: 7

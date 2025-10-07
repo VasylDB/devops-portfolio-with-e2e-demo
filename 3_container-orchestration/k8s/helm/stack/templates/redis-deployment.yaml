@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "stack.name" . }}-redis
+  labels:
+    {{- include "stack.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "stack.name" . }}-redis
+  template:
+    metadata:
+      labels:
+        app: {{ include "stack.name" . }}-redis
+        {{- include "stack.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          args: ["redis-server","--appendonly","yes"]

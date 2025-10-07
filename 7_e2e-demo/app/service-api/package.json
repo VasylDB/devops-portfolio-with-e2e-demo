@@ -1,0 +1,13 @@
+{
+  "name": "service-api",
+  "version": "0.1.0",
+  "main": "src/index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node -e "process.exit(0)""
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

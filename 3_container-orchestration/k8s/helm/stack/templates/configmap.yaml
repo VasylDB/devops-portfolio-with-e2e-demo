@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "stack.name" . }}-config
+  labels:
+    {{- include "stack.labels" . | nindent 4 }}
+data:
+  MESSAGE: {{ .Values.config.MESSAGE | quote }}
+  REDIS_HOST: {{ .Values.config.REDIS_HOST | quote }}
+  REDIS_PORT: {{ .Values.config.REDIS_PORT | quote }}

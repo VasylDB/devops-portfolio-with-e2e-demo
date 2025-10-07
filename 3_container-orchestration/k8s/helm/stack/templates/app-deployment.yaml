@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "stack.name" . }}-app
+  labels:
+    {{- include "stack.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount.app }}
+  selector:
+    matchLabels:
+      app: {{ include "stack.name" . }}-app
+  template:
+    metadata:
+      labels:
+        app: {{ include "stack.name" . }}-app
+        {{- include "stack.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: app
+          image: {{ .Values.image.app }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MESSAGE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "stack.name" . }}-config
+                  key: MESSAGE
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "stack.name" . }}-config
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "stack.name" . }}-config
+                  key: REDIS_PORT
+            - name: SECRET_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "stack.name" . }}-secret
+                  key: SECRET_TOKEN
+          resources: {{- toYaml .Values.resources.app | nindent 12 }}

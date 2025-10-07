@@ -1,0 +1,37 @@
+image:
+  app: "demo/app:latest"
+  worker: "demo/worker:latest"
+replicaCount:
+  app: 2
+  worker: 1
+service:
+  app:
+    type: ClusteIP
+    port: 3000
+config:
+  MESSAGE: "Hello from Helm ConfigMap"
+  REDIS_HOST: "redis"
+  REDIS_PORT: "6379"
+secret:
+  SECRET_TOKEN: "change-me"
+resources:
+  app:
+    requests: { cpu: 100m, memmory: 128Mi }
+    limits: { cpu: 500m, memmory: 256Mi }
+  worker:
+    requests: { cpu: 50m, memmory: 128Mi }
+    limits: { cpu: 200m, memmory: 128Mi }
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 70
+ingress:
+  enabled: true
+  className: ""
+  hosts:
+    - host: demo.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []

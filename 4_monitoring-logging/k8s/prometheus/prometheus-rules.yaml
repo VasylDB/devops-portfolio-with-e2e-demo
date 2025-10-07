@@ -1,0 +1,33 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: k8s-basic-alerts
+  namespace: monitoring
+spec:
+  groups:
+    - name: k8s.basic.rules
+      rules:
+        - alert: NodeHighCPU
+          expr: 100 - (avg by (instance)(irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High CPU on {{ $labels.instance }}"
+            description: "CPU usage >85% for 10m"
+        - alert: PodCrashLooping
+          expr: increase(kube_pod_container_status_restarts_total[10m]) > 3
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "CrashLoop in {{ $labels.namespace }}/{{ $labels.pod }}"
+            description: "Container restarting frequently"
+        - alert: LokiErrorSpike
+          expr: sum(rate(loki_distributor_ingester_appends_failed_total[5m])) > 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Loki ingestion errors"
+            description: "Loki is failing to ingest logs"
