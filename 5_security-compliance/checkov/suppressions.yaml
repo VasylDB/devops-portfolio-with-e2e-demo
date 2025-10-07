@@ -1,0 +1,6 @@
+# Keep this list short; each suppression must include a justification and expiry.
+suppressions:
+  - check_id: CKV_AWS_79
+    resource: aws_s3_bucket.public_assets
+    justification: "Demo bucket for public website in lab; not used for PII"
+    expires: "2026-01-01"

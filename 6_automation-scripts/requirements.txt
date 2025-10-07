@@ -1,0 +1,6 @@
+boto3
+kubernetes
+requests
+pyyaml
+urllib3<2.0  # to avoid TLS issues on some old systems
+flake8

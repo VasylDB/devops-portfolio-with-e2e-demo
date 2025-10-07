@@ -1,0 +1,18 @@
+format: table
+severity:
+  - HIGH
+  - CRITICAL
+vuln-type:
+  - os
+  - library
+ignore-unfixed: true
+exit-code: 1
+cache-dir: .trivy-cache
+scan:
+  scanners:
+    - vuln
+    - misconfig
+misconfiguration:
+  include-non-failures: false
+sbom:
+  enabled: false

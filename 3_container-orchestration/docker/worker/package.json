@@ -1,0 +1,7 @@
+{
+"name": "demo-worker",
+"version": "1.0.0",
+"main": "src/worker.js",
+"scripts": { "start": "node src/worker.js" },
+"dependencies": { "express": "^4.19.2", "ioredis": "^5.4.1" }
+}

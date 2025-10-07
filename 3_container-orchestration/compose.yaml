@@ -1,0 +1,35 @@
+version: '3.9'
+
+services:
+  app:
+    build: ./docker/app
+    image: demo/app:local
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      # config values (safe to log)
+      MESSAGE: ${MESSAGE:-Hello from ConfigMap}
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      # secret (do not log)
+      SECRET_TOKEN: ${SECRET_TOKEN}
+    depends_on:
+      - redis
+
+  worker:
+    build: .docker/worker
+    image: demo/worker:local
+    environment:
+      REDIS_HOST: ${REDIS_HOST:-redis}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+
+volumes:
+  redis-data: {}

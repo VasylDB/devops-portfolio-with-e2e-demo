@@ -1,0 +1,13 @@
+directory: ../iac/terraform
+framework: terraform
+quiet: false
+download-external-modules: true
+skip-download: false
+compact: true
+soft-fail: false
+output: cli,sarif,json
+output-file-path: checkov-results/
+external-checks-dir: []
+skip-check:
+  - CKV_AWS_79        # Example skip (document in suppressions.yaml)
+bc-api-key: null

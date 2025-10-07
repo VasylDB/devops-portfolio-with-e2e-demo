@@ -1,0 +1,21 @@
+{
+  "title": "K8s Workloads",
+  "schemaVersion": 38,
+  "version": 1,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Pod Restarts (5m)",
+      "targets": [
+        { "expr": "sum(increase(kube_pod_container_status_restarts_total[5m])) by (namespace,pod)" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Container CPU (cores)",
+      "targets": [
+        { "expr": "sum(rate(container_cpu_usage_seconds_total{image!=\"\"}[5m])) by (namespace,pod)" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+rules:
+  - id: node-express-no-eval
+    languages: [javascript, typescript]
+    message: "Avoid eval() in server code"
+    patterns:
+      - pattern: eval(...)
+    severity: ERROR
+  - id: insecure-http
+    languages: [javascript, typescript]
+    message: "Use HTTPS for external requests"
+    pattern: |
+      require('http')
+    severity: WARNING

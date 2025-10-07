@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "stack.name" . }}-worker
+  labels:
+    {{- include "stack.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount.worker }}
+  selector:
+    matchLabels:
+      app: {{ include "stack.name" . }}-worker
+  template:
+    metadata:
+      labels:
+        app: {{ include "stack.name" . }}-worker
+        {{- include "stack.labels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: worker
+          image: {{ .Values.image.worker }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "stack.name" . }}-config
+                  key: REDIS_HOST
+            - name: REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "stack.name" . }}-config
+                  key: REDIS_PORT
+          resources: {{- toYaml .Values.resources.worker | nindent 12 }}

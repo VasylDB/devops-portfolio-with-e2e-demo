@@ -1,0 +1,27 @@
+loki:
+  auth_enabled: false
+  commonConfig:
+    replication_factor: 1
+  storage:
+    type: filesystem
+  ruler:
+    enabled: true
+    alertmanager_url: http://kps-kube-prometheus-stack-alertmanager.monitoring.svc:9093
+
+grafana:
+  enabled: false
+
+promtail:
+  enabled: true
+  config:
+    clients:
+      - url: http://loki.logging.svc.cluster.local:3100/loki/api/v1/push
+    snippets:
+      pipelineStages:
+        - docker: {}
+        - cri: {}
+        - match:
+            selector: '{app=~".+"}'
+            stages:
+              - labeldrop:
+                  - filename

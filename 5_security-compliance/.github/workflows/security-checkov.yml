@@ -1,0 +1,46 @@
+name: Security – Checkov (Terraform)
+
+on:
+  pull_request:
+    paths:
+      - 'iac/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  checkov:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Checkov
+        run: pip install checkov
+
+      - name: Run Checkov
+        run: |
+          mkdir -p checkov-results
+          checkov -c checkov/config.yml --output sarif --output-file-path checkov-results/checkov.sarif || EXIT=$?
+          checkov -c checkov/config.yml --output cli --output-file-path checkov-results/checkov.txt || true
+          exit ${EXIT:-0}
+        shell: bash
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: checkov-results/checkov.sarif
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkov-report
+          path: checkov-results/
+          retention-days: 7

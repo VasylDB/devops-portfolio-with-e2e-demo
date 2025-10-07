@@ -1,0 +1,43 @@
+name: CD Staging
+on:
+  push:
+    branches: [ "staging" ]
+    paths:
+      - "app/service-api/**"
+      - "deploy/**"
+      - ".github/workflows/cd-staging.yml"
+concurrency:
+  group: staging-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure AWS creds via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-central-1
+          role-to-assume: ${{ secrets.AWS_GHA_ROLE_ARN_STAGING }}
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Build & Push image
+        run: |
+          IMAGE_TAG=stg-${{ github.run_number }}
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          docker build -t service-api:$IMAGE_TAG app/service-api
+          aws ecr describe-repositories --repository-names service-api >/dev/null 2>&1 ||             aws ecr create-repository --repository-name service-api --image-scanning-configuration scanOnPush=true
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          docker tag service-api:$IMAGE_TAG $ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/service-api:$IMAGE_TAG
+          docker push $ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/service-api:$IMAGE_TAG
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region eu-central-1 --name e2e-staging-eks
+      - name: Deploy via Helm
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          IMAGE_TAG=${{ env.IMAGE_TAG }}
+          kubectl get ns apps >/dev/null 2>&1 || kubectl create ns apps
+          helm upgrade --install service-api app/service-api/k8s/helm/service-api -n apps             --set image.repository="$ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/service-api"             --set image.tag="$IMAGE_TAG"

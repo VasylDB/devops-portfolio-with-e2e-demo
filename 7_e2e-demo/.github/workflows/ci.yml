@@ -1,0 +1,37 @@
+name: CI
+on:
+  push:
+    paths:
+      - "app/service-api/**"
+      - ".github/workflows/ci.yml"
+  pull_request:
+    paths:
+      - "app/service-api/**"
+jobs:
+  build-test-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install
+        working-directory: app/service-api
+        run: npm ci
+      - name: Test
+        working-directory: app/service-api
+        run: npm test
+      - name: Build image
+        run: |
+          echo "IMAGE_TAG=ci-${{ github.sha }}" >> $GITHUB_ENV
+          docker build -t service-api:${{ env.IMAGE_TAG }} app/service-api
+      - name: Trivy scan image
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          image-ref: service-api:${{ env.IMAGE_TAG }}
+          format: table
+          exit-code: "0"

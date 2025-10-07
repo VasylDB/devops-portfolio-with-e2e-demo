@@ -1,0 +1,11 @@
+# Normalize LF for source; keep CRLF for Windows scripts
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.sh  text eol=lf
+*.yaml text eol=lf
+*.yml  text eol=lf
+*.js   text eol=lf
+*.ts   text eol=lf
+Dockerfile text eol=lf

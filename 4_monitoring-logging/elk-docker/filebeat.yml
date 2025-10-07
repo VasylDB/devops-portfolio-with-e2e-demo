@@ -1,0 +1,30 @@
+filebeat.inputs:
+  # JSON app logs produced by app-json-writer
+  - type: filestream
+    id: app-json
+    enabled: true
+    paths: [ "/logs/app/*.json" ]
+    parsers:
+      - ndjson:
+          target: ""
+    fields:
+      log_type: app-json
+      event:
+        dataset: app
+
+  # Nginx access logs
+  - type: filestream
+    id: nginx
+    enabled: true
+    paths: [ "/var/log/nginx/*.log" ]
+    fields:
+      log_type: nginx
+      event:
+        dataset: nginx
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~
+
+output.logstash:
+  hosts: [ "logstash:5044" ]

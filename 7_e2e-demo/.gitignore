@@ -1,0 +1,27 @@
+# General
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*.swo
+node_modules/
+dist/
+build/
+.env
+.env.*
+# Python
+__pycache__/
+*.pyc
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+.terraform.lock.hcl
+# Kubernetes
+kubeconfig
+# Secrets (examples are kept, real files should not be committed)
+secrets/*.yaml

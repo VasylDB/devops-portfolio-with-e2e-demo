@@ -1,0 +1,41 @@
+# OS / Windows
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS (in case)
+.DS_Store
+
+# IDE / editor
+.vscode/
+.idea/
+*.code-workspace
+
+# Python
+.venv/
+__pycache__/
+
+# Node
+node_modules/
+
+# Logs / runtime
+logs/
+*.log
+elk-docker/nginx-logs/*
+
+# Env / secrets
+.env
+**/secrets*.yaml
+**/*secret*.yaml
+**/*.enc
+**/*.key
+
+# Build / temp / archives
+dist/
+build/
+tmp/
+*.tmp
+*.out
+*.zip
+*.tar
+*.tar.gz

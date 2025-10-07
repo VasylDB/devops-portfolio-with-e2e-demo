@@ -1,0 +1,24 @@
+# Docker artifacts
+**/.docker/
+*.tar
+*.tmp
+*.bak
+
+# Docker Compose override files
+docker-compose.override.yml
+docker-compose.override.*.yml
+
+# Logs
+logs
+*.log
+*.tmp
+
+# OS / IDE files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Jenkins job build data
+workspace/
+jobs/
